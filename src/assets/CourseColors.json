@@ -1,0 +1,42 @@
+{
+  "Introduction to Computing": "bg-slate-500",
+  "Programming 1": "bg-blue-500",
+  "Programming 2": "bg-blue-600",
+  "Object Oriented Programming": "bg-blue-700",
+
+  "Discrete Structures 1": "bg-emerald-500",
+  "Discrete Structures 2": "bg-emerald-600",
+  "Discrete Structures 3": "bg-emerald-700",
+
+  "Data Structures and Algorithms": "bg-red-500",
+  "Algorithms and Complexity": "bg-red-600",
+
+  "Digital Logic Design and Digital Computer Circuits": "bg-teal-500",
+  "Architecture and Organization with Assembly Language": "bg-teal-600",
+  "Automata Theory and Formaly Languages": "bg-teal-700",
+
+  "Networking 1": "bg-indigo-500",
+  "Networking 2": "bg-indigo-600",
+  "Information Assurance and Security": "bg-indigo-700",
+
+  "Web Development 1": "bg-cyan-500",
+  "Web Development 2": "bg-cyan-600",
+  "Mobile Development": "bg-cyan-700",
+
+  "Information Management 1": "bg-amber-500",
+  "Data Analytics": "bg-amber-600",
+  "Intelligent Systems": "bg-amber-700",
+
+  "System Analysis and Design": "bg-violet-500",
+  "Software Engineering": "bg-violet-600",
+  "Design Project": "bg-violet-700",
+
+  "Human-Computer Interaction": "bg-pink-500",
+  "Technopreneurship": "bg-pink-600",
+  "Application Development and Emerging Technologies": "bg-pink-700",
+
+  "Programming Languages": "bg-lime-500",
+
+  "Computer Hardware Servicing NC 2": "bg-orange-500",
+  "Computer Hardware Servicing NC 4": "bg-orange-600"
+}
