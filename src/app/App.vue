@@ -4,8 +4,9 @@
     import Home from "./routes/Home.vue"
     import Profile from "./routes/Profile.vue"
     import Create from "./routes/Create.vue"
+    import Admin from "./routes/Admin.vue"
 </script>
 
 <template>
-    <Create />
+    <Admin />
 </template>

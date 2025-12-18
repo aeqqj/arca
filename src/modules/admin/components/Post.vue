@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { FileText, ArrowUp, ArrowDown, ExternalLink } from "lucide-vue-next";
+import { FileText, CircleCheck, CircleX, ExternalLink } from "lucide-vue-next";
 
 interface Content {
     title: string;
@@ -39,35 +38,6 @@ if (childlover.time > 60) {
     hourStr = "hours ago";
 }
 
-const vote = ref<'up' | 'down' | null>(null);
-const voteCount = ref(0)
-
-function updoot() {
-    if (vote.value === 'up') {
-        vote.value = null;
-        voteCount.value -= 1;
-    } else {
-        if (vote.value === 'down') {
-            voteCount.value += 1;
-        }
-        vote.value = 'up';
-        voteCount.value += 1; // negates the -1 and ADDS another 1
-    }
-}
-
-function downdoot() {
-    if (vote.value === 'down') {
-        vote.value = null;
-        voteCount.value += 1;
-    } else {
-        if (vote.value === 'up') {
-            voteCount.value -= 1;
-        }
-        vote.value = 'down';
-        voteCount.value -= 1;
-    }
-}
-
 </script>
 
 <template>
@@ -76,8 +46,9 @@ function downdoot() {
             <div class="flex gap-5">
                 <img :src="avatar" alt="avatar" class="h-16 w-16 rounded-2xl">
                 <div>
-                    <p class="text-[1.25rem]">{{ childlover.title }}</p>
-                    <p class="text-[0.75rem]">{{ childlover.user }} <span class="opacity-60 text-[0.625rem]">• {{ time
+                    <p class="text-[1.25em] ">{{ childlover.title }}</p>
+                    <p class="text-[0.5] opacity-80">{{ childlover.user }} <span class="opacity-60 text-[0.625rem]">• {{
+                        time
                             }} {{ hourStr }} </span></p>
                 </div>
             </div>
@@ -87,7 +58,7 @@ function downdoot() {
             <div v-for="file in childlover.files" :key="file.id"
                 class="flex items-center h-fit w-fit px-4 py-2 bg-background2 gap-2 rounded-xl shadow-lg">
                 <div class="bg-background0/60 h-fit w-fit p-3 rounded-4xl">
-                    <FileText :size="16" />
+                    <FileText :size="16"/>
                 </div>
                 <div class="flex flex-col">
                     <p class="text-sm">{{ file.name }}.pdf</p>
@@ -98,18 +69,18 @@ function downdoot() {
         <div>
             <div class="flex justify-between items-center">
                 <div class="flex gap items-center gap-3">
-                    <div class="flex gap-4 items-center">
-                        <button @click="updoot">
-                            <ArrowUp class="h-fit w-fit p-3 bg-background2/60 rounded-xl shadow-lg"
-                                :class="vote === 'up' ? 'text-green-300' : 'text-foreground0'" />
+                    <div class="w-fit flex gap-4 items-center">
+                        <button
+                            class="flex justify-center items-center px-4 py-3 gap-2 bg-background2/60 rounded-xl shadow-lg">
+                            <CircleCheck class="text-green-300" />
+                            Approve
                         </button>
-                        {{ voteCount }}
-                        <button @click="downdoot">
-                            <ArrowDown class="h-fit w-fit p-3 bg-background2/60 rounded-xl shadow-lg"
-                                :class="vote === 'down' ? 'text-red-300' : 'text-foreground0'" />
+                        <button
+                            class="flex justify-center items-center px-4 py-3 gap-2 bg-background2/60 rounded-xl shadow-lg">
+                            <CircleX class="text-red-300" />
+                            Deny
                         </button>
                     </div>
-                    <ExternalLink class="h-fit w-fit p-3 bg-background2/60 rounded-xl shadow-lg" />
                 </div>
                 <p class="px-4 py-1 bg-dsa rounded-2xl text-background1">{{ childlover.tag }}</p>
             </div>
