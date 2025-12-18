@@ -8,7 +8,7 @@ const school: string = "SAS";
 <template>
     <div
         class="h-16 px-6 py-2 flex justify-between items-center border-b border-foreground0/20 fixed top-0 left-0 right-0 bg-background0 z-50">
-        <button class="font-outfit font-semibold text-2xl">arca • {{ school }}</button>
+        <button class="font-outfit font-semibold text-3xl">arca • {{ school }}</button>
         <SearchBar />
         <div class="flex justify-between items-center gap-6 text-foreground0/60">
             <button class="flex h-fit w-fit px-3 py-1 gap-2 border rounded-xl">

@@ -12,11 +12,11 @@ export interface PostResponse {
   lastName: string;
   departmentId: number;
   departmentName: string;
-  postTags: string[];
+  postTags: string;
   rejectionReason: string | null;
-  isLatestVersion: boolean;  // Note: camelCase in TypeScript/JSON
-  createdAt: string;  // ISO date string from LocalDateTime
-  updatedAt: string;  // ISO date string from LocalDateTime
+  isLatestVersion: boolean;
+  createdAt: string;
+  updatedAt: string;
   upvoteCount: number;
   downvoteCount: number;
   files: FileResponse[];

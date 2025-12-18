@@ -1,42 +1,43 @@
 {
-  "Introduction to Computing": "bg-slate-500",
-  "Programming 1": "bg-blue-500",
-  "Programming 2": "bg-blue-600",
-  "Object Oriented Programming": "bg-blue-700",
+  "Introduction to Computing": "bg-slate-300",
 
-  "Discrete Structures 1": "bg-emerald-500",
-  "Discrete Structures 2": "bg-emerald-600",
-  "Discrete Structures 3": "bg-emerald-700",
+  "Programming 1": "bg-blue-200",
+  "Programming 2": "bg-blue-300",
+  "Object Oriented Programming": "bg-blue-400",
 
-  "Data Structures and Algorithms": "bg-red-500",
-  "Algorithms and Complexity": "bg-red-600",
+  "Discrete Structures 1": "bg-emerald-200",
+  "Discrete Structures 2": "bg-emerald-300",
+  "Discrete Structures 3": "bg-emerald-400",
 
-  "Digital Logic Design and Digital Computer Circuits": "bg-teal-500",
-  "Architecture and Organization with Assembly Language": "bg-teal-600",
-  "Automata Theory and Formaly Languages": "bg-teal-700",
+  "Data Structures and Algorithms": "bg-red-200",
+  "Algorithms and Complexity": "bg-red-300",
 
-  "Networking 1": "bg-indigo-500",
-  "Networking 2": "bg-indigo-600",
-  "Information Assurance and Security": "bg-indigo-700",
+  "Digital Logic Design and Digital Computer Circuits": "bg-teal-200",
+  "Architecture and Organization with Assembly Language": "bg-teal-300",
+  "Automata Theory and Formaly Languages": "bg-teal-400",
 
-  "Web Development 1": "bg-cyan-500",
-  "Web Development 2": "bg-cyan-600",
-  "Mobile Development": "bg-cyan-700",
+  "Networking 1": "bg-indigo-200",
+  "Networking 2": "bg-indigo-300",
+  "Information Assurance and Security": "bg-indigo-400",
 
-  "Information Management 1": "bg-amber-500",
-  "Data Analytics": "bg-amber-600",
-  "Intelligent Systems": "bg-amber-700",
+  "Web Development 1": "bg-cyan-200",
+  "Web Development 2": "bg-cyan-300",
+  "Mobile Development": "bg-cyan-400",
 
-  "System Analysis and Design": "bg-violet-500",
-  "Software Engineering": "bg-violet-600",
-  "Design Project": "bg-violet-700",
+  "Information Management 1": "bg-amber-200",
+  "Data Analytics": "bg-amber-300",
+  "Intelligent Systems": "bg-amber-400",
 
-  "Human-Computer Interaction": "bg-pink-500",
-  "Technopreneurship": "bg-pink-600",
-  "Application Development and Emerging Technologies": "bg-pink-700",
+  "System Analysis and Design": "bg-violet-200",
+  "Software Engineering": "bg-violet-300",
+  "Design Project": "bg-violet-400",
 
-  "Programming Languages": "bg-lime-500",
+  "Human-Computer Interaction": "bg-pink-200",
+  "Technopreneurship": "bg-pink-300",
+  "Application Development and Emerging Technologies": "bg-pink-400",
 
-  "Computer Hardware Servicing NC 2": "bg-orange-500",
-  "Computer Hardware Servicing NC 4": "bg-orange-600"
+  "Programming Languages": "bg-lime-300",
+
+  "Computer Hardware Servicing NC 2": "bg-orange-200",
+  "Computer Hardware Servicing NC 4": "bg-orange-300"
 }
