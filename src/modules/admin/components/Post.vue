@@ -28,22 +28,42 @@ function selectUser() {
 const avatar = "/newaccount.png";
 
 const timeDisplay = computed(() => {
-    if (!props.post) return "0 minutes ago";
+    if (!props.post) return "just now";
 
     const createdAt = new Date(props.post.createdAt);
     const now = new Date();
-    let diffMinutes = Math.floor((now.getTime() - createdAt.getTime()) / (1000 * 60));
 
-    let time = diffMinutes;
-    let unit = "minutes ago";
+    const diffMs = now.getTime() - createdAt.getTime();
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMinutes / 60);
+    const diffDays = Math.floor(diffHours / 24);
 
-    if (diffMinutes >= 60) {
-        time = Math.floor(diffMinutes / 60);
-        unit = "hours ago";
+    if (diffMinutes < 1) {
+        return "just now";
     }
 
-    return `${time} ${unit}`;
+    if (diffMinutes < 60) {
+        return `${diffMinutes} minute${diffMinutes !== 1 ? "s" : ""} ago`;
+    }
+
+    if (diffHours < 24) {
+        return `${diffHours} hour${diffHours !== 1 ? "s" : ""} ago`;
+    }
+
+    return `${diffDays} day${diffDays !== 1 ? "s" : ""} ago`;
 });
+
+function formatFileSize(bytes: number): string {
+    if (bytes === 0) return "0 B";
+
+    const k = 1024;
+    const units = ["B", "KB", "MB", "GB", "TB"];
+
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    const size = bytes / Math.pow(k, i);
+
+    return `${size.toFixed(size < 10 ? 1 : 0)} ${units[i]}`;
+}
 
 </script>
 
@@ -55,8 +75,8 @@ const timeDisplay = computed(() => {
                     <img :src="avatar" alt="avatar" class="h-16 w-16 rounded-2xl">
                     <div>
                         <p class="text-[1.25em]">{{ post.title }}</p>
-                        <p class="text-[0.5] opacity-80">{{ post.firstName }} {{ post.lastName }}
-                            <span class="opacity-60 text-[0.625rem]">• {{ timeDisplay }}
+                        <p class="opacity-80">{{ post.firstName }} {{ post.lastName }}
+                            <span class="opacity-60 text-[0.725rem]">• {{ timeDisplay }}
                             </span>
                         </p>
                     </div>
@@ -67,13 +87,13 @@ const timeDisplay = computed(() => {
         </div>
         <div class="flex gap-4" v-if="post.files && post.files.length">
             <div v-for="file in post.files" :key="file.id"
-                class="flex items-center h-fit w-fit px-4 py-2 bg-background2 gap-2 rounded-xl shadow-lg">
-                <div class="bg-background0/60 h-fit w-fit p-3 rounded-4xl">
+                class="flex items-center h-fit w-fit px-3 py-2 bg-background2 gap-2 rounded-xl shadow-lg">
+                <div class="bg-background0/40 h-fit w-fit p-3 rounded-xl">
                     <FileText :size="16" />
                 </div>
-                <div class="flex flex-col">
-                    <p class="text-sm">{{ file.fileName }}.pdf</p>
-                    <p class="text-[0.5rem] opacity-60">{{ file.fileSize }} mb</p>
+                <div class="flex flex-col font-medium">
+                    <p class="text-sm ">{{ file.fileName }}.pdf</p>
+                    <p class="text-[0.5rem] opacity-60 ">{{ formatFileSize(file.fileSize) }}</p>
                 </div>
             </div>
         </div>
