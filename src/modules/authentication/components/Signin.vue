@@ -17,8 +17,8 @@ const submit = async () => {
         const res = await AuthService.login(email.value, password.value)
 
         // save tokens
-        localStorage.setItem('accessToken', res.data.accessToken)
-        localStorage.setItem('refreshToken', res.data.refreshToken)
+        localStorage.setItem('accessToken', res.data.access_token)
+        localStorage.setItem('refreshToken', res.data.refresh_token)
 
         // update auth store
         auth.isAuthenticated = true

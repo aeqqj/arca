@@ -2,15 +2,21 @@
 import MainLayout from '@/components/MainLayout.vue';
 import Post from '@/components/Post.vue';
 import { ChevronDown } from 'lucide-vue-next';
-import { dummyPostResponses } from '@/dummy/DummyPostResponse';
-import { dummyDepartmentSubjects } from "@/dummy/DummyDepartmentSubjects";
+import { usePostApi } from '@/composables/UsePostApi';
+import { useAuthStore } from '@/modules/authentication/store/authStore';
 import { ref, onMounted, computed } from 'vue';
-import type { PostResponse } from '@/types/Post';
+import type { PostType } from '@/types/Post';
 
-const posts = ref<PostResponse[]>([]);
+const posts = ref<PostType[]>([]);
 const sortBy = ref<'best' | 'recent'>('best');
 const selectedSubject = ref<string | null>(null);
 const showSortMenu = ref(false);
+const loading = ref(true);
+const error = ref('');
+
+const auth = useAuthStore();
+
+const postApi = usePostApi();
 
 const onSubjectSelected = (subjectName: string) => {
     if (selectedSubject.value === subjectName) {
@@ -50,8 +56,18 @@ const setSort = (value: 'best' | 'recent') => {
     showSortMenu.value = false;
 };
 
-onMounted(() => {
-    posts.value = dummyPostResponses;
+onMounted(async () => {
+    loading.value = true;
+    try {
+        // Replace with your logic for departmentId if needed
+        const departmentId = 1; // example
+        posts.value = await postApi.getAllDepartmentPosts(departmentId);
+    } catch (err: any) {
+        console.error('Failed to fetch posts:', err);
+        error.value = 'Failed to load posts';
+    } finally {
+        loading.value = false;
+    }
 })
 
 </script>
@@ -75,6 +91,8 @@ onMounted(() => {
                 </div>
             </div>
             <div class="flex flex-col gap-8">
+                <div v-if="loading">Loading posts...</div>
+                <div v-else-if="error">{{ error }}</div>
                 <Post v-for="post in sortedPosts" :key="post.id" :post="post" />
             </div>
         </div>

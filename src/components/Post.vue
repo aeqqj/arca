@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { FileText, ArrowUp, ArrowDown, ExternalLink } from "lucide-vue-next";
-import type { PostResponse } from "@/types/Post";
+import type { PostType } from "@/types/Post";
 
 const props = defineProps<{
-    post: PostResponse;
+    post: PostType;
 }>()
 
 const avatar = "/newaccount.png";

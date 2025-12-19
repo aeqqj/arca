@@ -2,10 +2,10 @@
 import Layout from '@/modules/profile/components/Layout.vue';
 import Post from '@/components/Post.vue';
 import { ref, onMounted } from 'vue';
-import type { PostResponse } from '@/types/Post';
+import type { PostType } from '@/types/Post';
 import { dummyPostResponses } from '@/dummy/DummyPostResponse';
 
-const posts = ref<PostResponse[]>([]);
+const posts = ref<PostType[]>([]);
 
 onMounted(() => {
     posts.value = dummyPostResponses;

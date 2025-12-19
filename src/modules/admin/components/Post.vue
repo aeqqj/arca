@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { FileText, CircleCheck, CircleX } from "lucide-vue-next";
-import type { PostResponse } from "@/types/Post";
+import type { PostType } from "@/types/Post";
 import { computed } from "vue";
 
 const props = defineProps<{
-    post: PostResponse;
+    post: PostType;
 }>()
 
 const emit = defineEmits<{

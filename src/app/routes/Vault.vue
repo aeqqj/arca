@@ -3,10 +3,10 @@ import MainLayout from '@/components/MainLayout.vue';
 import Post from '@/components/Post.vue';
 import { ChevronDown } from 'lucide-vue-next';
 import { dummyPostResponses } from '@/dummy/DummyPostResponse';
-import type { PostResponse } from '@/types/Post';
+import type { PostType } from '@/types/Post';
 import { ref, onMounted } from 'vue';
 
-const posts = ref<PostResponse[]>([]);
+const posts = ref<PostType[]>([]);
 
 onMounted(() => {
   posts.value = dummyPostResponses;

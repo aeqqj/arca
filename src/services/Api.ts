@@ -2,7 +2,7 @@ import axios from "axios"
 import { AuthService } from "./AuthService"
 
 export const api = axios.create({
-  baseURL: "/api",
+  baseURL: import.meta.env.VITE_API_BASE_URL,
 })
 
 api.interceptors.request.use(config => {
@@ -16,18 +16,34 @@ api.interceptors.request.use(config => {
 api.interceptors.response.use(
   res => res,
   async error => {
-    if (error.response?.status === 401) {
+    const originalRequest = error.config
+
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry
+    ) {
+      originalRequest._retry = true
+
       const refreshToken = localStorage.getItem("refreshToken")
-      if (!refreshToken) throw error
+      if (!refreshToken) {
+        localStorage.clear()
+        return Promise.reject(error)
+      }
 
-      const res = await AuthService.refresh(refreshToken)
-      localStorage.setItem("accessToken", res.data.accessToken)
+      try {
+        const res = await AuthService.refreshToken(refreshToken)
+        localStorage.setItem("accessToken", res.data.accessToken)
 
-      error.config.headers.Authorization =
-        `Bearer ${res.data.accessToken}`
+        originalRequest.headers.Authorization =
+          `Bearer ${res.data.accessToken}`
 
-      return api(error.config)
+        return api(originalRequest)
+      } catch (err) {
+        localStorage.clear()
+        return Promise.reject(err)
+      }
     }
-    throw error
+
+    return Promise.reject(error)
   }
 )

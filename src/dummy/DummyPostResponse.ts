@@ -1,6 +1,6 @@
-import type { PostResponse } from "@/types/Post";
+import type { PostType } from "@/types/Post";
 
-export const dummyPostResponses: PostResponse[] = [
+export const dummyPostResponses: PostType[] = [
     {
         id: 1,
         postId: 1001,

@@ -1,47 +1,53 @@
 import axios from 'axios';
-import type { PostResponse } from '@/types/Post';
+import type { PostType, PostApprovalRequest, PostRequest, PostUpdateRequest } from '@/types/Post';
 
 const api = axios.create({
-  baseURL: '/api', // or 'http://localhost:8080/api' for development
+  baseURL: import.meta.env.VITE_API_BASE_URL, // https://arca-292333624176.asia-east2.run.app/api
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
+api.interceptors.request.use(config => {
+  const token = localStorage.getItem('accessToken'); // <- JWT saved in localStorage after login
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
+
 export const postService = {
   // Get single post (latest version)
-  async getPost(postId: number): Promise<PostResponse> {
-    const { data } = await api.get<PostResponse>(`/posts/${postId}`);
+  async getPost(postId: number): Promise<PostType> {
+    const { data } = await api.get<PostType>(`/posts/${postId}`);
     return data;
   },
 
   // Get post history (all versions)
-  async getPostHistory(postId: number): Promise<PostResponse[]> {
-    const { data } = await api.get<PostResponse[]>(`/posts/history/${postId}`);
+  async getPostHistory(postId: number): Promise<PostType[]> {
+    const { data } = await api.get<PostType[]>(`/posts/history/${postId}`);
     return data;
   },
 
   // Get all user posts
-  async getAllUserPosts(userId: number): Promise<PostResponse[]> {
-    const { data } = await api.get<PostResponse[]>(`/posts/user/${userId}`);
+  async getAllUserPosts(userId: number): Promise<PostType[]> {
+    const { data } = await api.get<PostType[]>(`/posts/user/${userId}`);
     return data;
   },
 
   // Get all department posts
-  async getAllDepartmentPosts(departmentId: number): Promise<PostResponse[]> {
-    const { data } = await api.get<PostResponse[]>(`/posts/department/${departmentId}`);
+  async getAllDepartmentPosts(departmentId: number): Promise<PostType[]> {
+    const { data } = await api.get<PostType[]>(`/posts/department/${departmentId}`);
     return data;
   },
 
   // Get pending posts
-  async getPendingPosts(): Promise<PostResponse[]> {
-    const { data } = await api.get<PostResponse[]>('/posts/pending');
+  async getPendingPosts(): Promise<PostType[]> {
+    const { data } = await api.get<PostType[]>('/posts/pending');
     return data;
   },
 
   // Get pending posts by department
-  async getPendingPostsByDepartment(departmentId: number): Promise<PostResponse[]> {
-    const { data } = await api.get<PostResponse[]>(`/posts/pending/department/${departmentId}`);
+  async getPendingPostsByDepartment(departmentId: number): Promise<PostType[]> {
+    const { data } = await api.get<PostType[]>(`/posts/pending/department/${departmentId}`);
     return data;
   },
 

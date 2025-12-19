@@ -1,6 +1,6 @@
 import type { FileResponse } from "./File";
 
-export interface PostResponse {
+export interface PostType {
   id: number;
   postId: number;
   version: number;
