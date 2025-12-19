@@ -9,5 +9,5 @@
 </script>
 
 <template>
-    <Search />
+    <Home />
 </template>

@@ -3,13 +3,22 @@ import MainHeader from "./MainHeader.vue"
 import MainSideBar from "./MainSideBar.vue"
 
 let department: string = "DCISM"
+
+const emit = defineEmits<{
+  (e: 'selectSubject', subjectName: string): void;
+}>();
+
+function handleSidebarSelect(subjectName: string) {
+  emit('selectSubject', subjectName);
+}
+
 </script>
 
 <template>
     <section class="w-screen h-screen flex flex-col text-center">
         <MainHeader />
         <div class="h-full flex items-start absolute">
-            <MainSideBar />
+            <MainSideBar @selectSubject="handleSidebarSelect" />
             <div class="pl-90 pt-36 flex gap-24">
                 <slot></slot>
             </div>

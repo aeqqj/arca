@@ -16,6 +16,18 @@
     --color-dsa: var(--color-red-100);
 }
 
+::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  scrollbar-width: none;
+}
+
+* {
+  -ms-overflow-style: none;
+}
+
 html {
     font-family: "Poppins", sans-serif;
     background-color: var(--color-background0);

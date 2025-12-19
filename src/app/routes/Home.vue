@@ -3,19 +3,31 @@ import MainLayout from '@/components/MainLayout.vue';
 import Post from '@/components/Post.vue';
 import { ChevronDown } from 'lucide-vue-next';
 import { dummyPostResponses } from '@/dummy/DummyPostResponse';
+import { dummyDepartmentSubjects } from "@/dummy/DummyDepartmentSubjects";
 import { ref, onMounted, computed } from 'vue';
 import type { PostResponse } from '@/types/Post';
 
 const posts = ref<PostResponse[]>([]);
 const sortBy = ref<'best' | 'recent'>('best');
+const selectedSubject = ref<string | null>(null);
 const showSortMenu = ref(false);
 
-onMounted(() => {
-    posts.value = dummyPostResponses;
-})
+const onSubjectSelected = (subjectName: string) => {
+    selectedSubject.value = subjectName;
+};
+
+const filteredPosts = computed(() => {
+    if (!selectedSubject.value) { // you can rename to selectedTag if you want
+        return posts.value;
+    }
+
+    return posts.value.filter(
+        post => post.postTags.includes(selectedSubject.value!)
+    );
+});
 
 const sortedPosts = computed(() => {
-    const copy = [...posts.value];
+    const copy = [...filteredPosts.value];
 
     if (sortBy.value === 'recent') {
         return copy.sort(
@@ -34,10 +46,14 @@ const setSort = (value: 'best' | 'recent') => {
     showSortMenu.value = false;
 };
 
+onMounted(() => {
+    posts.value = dummyPostResponses;
+})
+
 </script>
 
 <template>
-    <MainLayout>
+    <MainLayout @selectSubject="onSubjectSelected">
         <div class="flex flex-col gap-6">
             <div class="relative w-fit">
                 <p class="flex items-center gap-1 cursor-pointer select-none" @click="showSortMenu = !showSortMenu">

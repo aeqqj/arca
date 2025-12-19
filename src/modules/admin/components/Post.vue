@@ -89,7 +89,7 @@ function formatFileSize(bytes: number): string {
             <div v-for="file in post.files" :key="file.id"
                 class="flex items-center h-fit w-fit px-3 py-2 bg-background2 gap-2 rounded-xl shadow-lg">
                 <div class="bg-background0/40 h-fit w-fit p-3 rounded-xl">
-                    <FileText :size="16" />
+                    <FileText :size="16" class="text-foreground0/80"/>
                 </div>
                 <div class="flex flex-col font-medium">
                     <p class="text-sm ">{{ file.fileName }}.pdf</p>
