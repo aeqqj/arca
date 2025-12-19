@@ -13,11 +13,15 @@ const selectedSubject = ref<string | null>(null);
 const showSortMenu = ref(false);
 
 const onSubjectSelected = (subjectName: string) => {
-    selectedSubject.value = subjectName;
-};
+    if (selectedSubject.value === subjectName) {
+        selectedSubject.value = null
+    } else {
+        selectedSubject.value = subjectName
+    }
+}
 
 const filteredPosts = computed(() => {
-    if (!selectedSubject.value) { // you can rename to selectedTag if you want
+    if (!selectedSubject.value) {
         return posts.value;
     }
 

@@ -3,6 +3,7 @@ import { computed } from "vue";
 import type { Subject } from "@/types/Subject";
 import { dummySubjects } from "@/dummy/DummySubjects";
 import { dummyDepartmentSubjects } from "@/dummy/DummyDepartmentSubjects";
+import { useRouter } from "vue-router";  // <--- import useRouter
 
 const department = {
     id: 1,
@@ -14,8 +15,11 @@ const emit = defineEmits<{
     (e: "selectSubject", subjectName: string): void;
 }>();
 
+const router = useRouter(); 
+
 function handleSelectSubject(subjectName: string) {
     emit('selectSubject', subjectName);
+    router.push('/home');
 }
 
 const departmentSubjects = computed<Subject[]>(() => {
