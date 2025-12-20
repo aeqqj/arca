@@ -3,32 +3,21 @@ import { togglePage, switchStore } from '../store/switchStore';
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/modules/authentication/store/authStore'
-import { AuthService } from '@/services/AuthService'
 
 const router = useRouter()
 const auth = useAuthStore()
-
 const email = ref('')
 const password = ref('')
 const error = ref('')
 
 const submit = async () => {
     try {
-        const res = await AuthService.login(email.value, password.value)
-
-        // save tokens
-        localStorage.setItem('accessToken', res.data.access_token)
-        localStorage.setItem('refreshToken', res.data.refresh_token)
-
-        // update auth store
-        auth.isAuthenticated = true
-
+        await auth.login(email.value, password.value) // Use auth store's login action
         router.push('/home')
     } catch (e: any) {
         error.value = e.response?.data?.error || 'Login failed'
     }
 }
-
 </script>
 
 <template>
@@ -43,7 +32,7 @@ const submit = async () => {
                     class="w-80 px-5 py-3 bg-background1 rounded-xl shadow-xl" />
             </div>
             <div class="flex flex-col justify-start text-left gap-1">
-                <label>Email</label>
+                <label>Password</label>
                 <input v-model="password" type="password" placeholder="Enter your password"
                     class="w-80 px-5 py-3 bg-background1 rounded-xl shadow-xl" />
                 <button class="text-sm text-right opacity-60">

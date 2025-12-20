@@ -2,46 +2,131 @@
 import Layout from '@/modules/admin/components/Layout.vue';
 import PendingPosts from '@/modules/admin/components/PendingPosts.vue';
 import UserAccount from '@/modules/admin/components/UserAccount.vue';
-import { dummyPostResponses } from '@/dummy/DummyPostResponse';
-import { dummyUsers } from '@/dummy/DummyUsers'
-import type { PostType } from '@/types/Post';
-import type { UserType } from "@/types/User";
-import { ref, onMounted } from 'vue';
+import { PostService } from '@/services/PostService';
+import { UserService } from '@/services/UserService';
+import type { PostResponse } from '@/types/Post';
+import type { User } from "@/types/User";
+import { ref, onMounted, computed } from 'vue';
 
-const posts = ref<PostType[]>([]);
-const selectedUser = ref<UserType | null>(null);
+const posts = ref<PostResponse[]>([]);
+const selectedUser = ref<User | null>(null);
+const loading = ref(false);
+const error = ref<string | null>(null);
 
-function handleApprovePost(postId: number) {
-    const post = posts.value.find(p => p.postId === postId)
-    if (post) {
-        post.status = 'APPROVED';
+// Filter posts by selected user
+const userPosts = computed(() => {
+    if (!selectedUser.value) return [];
+    return posts.value.filter(p => p.user_id === selectedUser.value?.id);
+});
+
+async function handleApprovePost(postId: number) {
+    try {
+        loading.value = true;
+        error.value = null;
+
+        // Call the approve endpoint with approved: true
+        await PostService.approvePost(postId, {
+            approved: true
+        });
+
+        // Remove from pending posts or update status
+        posts.value = posts.value.filter(p => p.post_id !== postId);
+
+        // Or if you want to keep it and update status:
+        // const post = posts.value.find(p => p.post_id === postId);
+        // if (post) {
+        //     post.status = 'APPROVED';
+        // }
+
         selectedUser.value = null;
+    } catch (err: any) {
+        console.error('Error approving post:', err);
+        error.value = err.response?.data?.message || 'Failed to approve post';
+    } finally {
+        loading.value = false;
     }
 }
 
-function handleDenyPost(postId: number) {
-    const post = posts.value.find(p => p.postId === postId)
-    if (post) {
-        post.status = 'REJECTED';
+async function handleDenyPost(postId: number, reason?: string) {
+    try {
+        loading.value = true;
+        error.value = null;
+
+        // Call the approve endpoint with approved: false and optional reason
+        await PostService.approvePost(postId, {
+            approved: false,
+            rejection_reason: reason || 'Post does not meet guidelines'
+        });
+
+        // Remove from pending posts or update status
+        posts.value = posts.value.filter(p => p.post_id !== postId);
+
+        // Or if you want to keep it and update status:
+        // const post = posts.value.find(p => p.post_id === postId);
+        // if (post) {
+        //     post.status = 'REJECTED';
+        //     if (reason) post.rejection_reason = reason;
+        // }
+
         selectedUser.value = null;
+    } catch (err: any) {
+        console.error('Error denying post:', err);
+        error.value = err.response?.data?.message || 'Failed to deny post';
+    } finally {
+        loading.value = false;
     }
 }
 
-function handleSelectUser(userId: number) {
-    const user = dummyUsers.find(u => u.id === userId) || null;
-    selectedUser.value = user;
+async function handleSelectUser(userId: number) {
+    try {
+        loading.value = true;
+        error.value = null;
+
+        // Fetch user from backend
+        const user = await UserService.getUserDetails(userId);
+        selectedUser.value = user;
+    } catch (err: any) {
+        console.error('Error fetching user:', err);
+        error.value = err.response?.data?.message || 'Failed to fetch user';
+        selectedUser.value = null;
+    } finally {
+        loading.value = false;
+    }
+}
+
+async function fetchPendingPosts() {
+    try {
+        loading.value = true;
+        error.value = null;
+
+        // Fetch pending posts from backend
+        posts.value = await PostService.getAllPendingApprovalPosts();
+    } catch (err: any) {
+        console.error('Error fetching pending posts:', err);
+        error.value = err.response?.data?.message || 'Failed to fetch pending posts';
+    } finally {
+        loading.value = false;
+    }
 }
 
 onMounted(() => {
-    posts.value = dummyPostResponses;
-})
-
+    fetchPendingPosts();
+});
 </script>
 
 <template>
     <Layout>
+        <div v-if="error" class="text-red-500 text-sm px-4 py-2 bg-red-100 rounded mb-4">
+            {{ error }}
+        </div>
+
+        <div v-if="loading && posts.length === 0" class="text-center py-8">
+            Loading pending posts...
+        </div>
+
         <PendingPosts :posts="posts" @approvePost="handleApprovePost" @denyPost="handleDenyPost"
             @selectUser="handleSelectUser" />
-        <UserAccount :user="selectedUser" :posts="posts"/>
+
+        <UserAccount :user="selectedUser" :posts="userPosts" />
     </Layout>
 </template>

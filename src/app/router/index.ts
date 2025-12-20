@@ -15,7 +15,7 @@ const routes = [
     { path: '/auth', name: 'Authentication', component: Authentication, meta: { public: true } },
 
     { path: '/home', name: 'Home', component: Home },
-    { path: '/profile', name: 'Profile', component: Profile },
+    { path: '/profile/:userId', name: 'Profile', component: Profile, props: true },
     { path: '/search', name: 'Search', component: Search },
     { path: '/vault', name: 'Vault', component: Vault },
     { path: '/admin', name: 'Admin', component: Admin },

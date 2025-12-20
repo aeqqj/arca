@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { PostType } from '@/types/Post';
+import type { PostResponse } from '@/types/Post';
 import Post from './Post.vue';
 import { computed } from 'vue';
 
 const props = defineProps<{
-    posts: PostType[]
+    posts: PostResponse[]
 }>()
 
 const emit = defineEmits<{

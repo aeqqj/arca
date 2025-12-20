@@ -1,16 +1,23 @@
 <script setup lang="ts">
+import { useRouter } from 'vue-router';
 import type { User } from '@/types/User';
 
-const avatar = "/newaccount.png"
+const router = useRouter();
+const avatar = "/newaccount.png";
 
 const props = defineProps<{
     user: User
-}>()
+}>();
+
+function goToProfile() {
+    router.push({ name: 'Profile', params: { userId: props.user.id } }); 
+}
 
 </script>
 
 <template>
-    <button class="w-220 flex bg-background1 p-6 rounded-xl justify-between shadow-xl text-start">
+    <button @click="goToProfile"
+        class="w-220 flex bg-background1 p-6 rounded-xl justify-between shadow-xl text-start hover:bg-background2 transition-colors">
         <div class="flex justify-start gap-5">
             <img :src="avatar" alt="avatar" class="h-16 w-16 rounded-2xl" />
             <div class="h-full flex flex-col gap-3">
@@ -24,12 +31,10 @@ const props = defineProps<{
                             {{ user.roles[0] }}
                         </span>
                     </div>
-
                     <p class="text-xs font-semibold opacity-60">
                         {{ user.course }} • {{ user.department }}
                     </p>
                 </div>
-
                 <p class="text-sm font-medium">
                     {{ user.bio || 'No bio provided.' }}
                 </p>

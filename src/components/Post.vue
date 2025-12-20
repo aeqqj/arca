@@ -1,19 +1,34 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { FileText, ArrowUp, ArrowDown, ExternalLink } from "lucide-vue-next";
-import type { PostType } from "@/types/Post";
+import type { PostResponse } from "@/types/Post";
+import { VoteService } from "@/services/VoteService";
+import { useAuthStore } from '@/modules/authentication/store/authStore';
+import { useUserSearch } from '@/composables/getUserSearch';
 
 const props = defineProps<{
-    post: PostType;
+    post: PostResponse;
 }>()
 
+const auth = useAuthStore();
+const { getUserIdByEmail } = useUserSearch();
 const avatar = "/newaccount.png";
 
 const timeDisplay = computed(() => {
-    if (!props.post) return "just now";
+    if (!props.post || !props.post.created_at) return "just now";
 
-    const createdAt = new Date(props.post.createdAt);
+    let createdAt = new Date(props.post.created_at);
+
+    if (!props.post.created_at.endsWith('Z')) {
+        createdAt = new Date(props.post.created_at + 'Z');
+    }
+
     const now = new Date();
+
+    if (isNaN(createdAt.getTime())) {
+        console.error('Invalid created_at date:', props.post.created_at);
+        return "unknown time";
+    }
 
     const diffMs = now.getTime() - createdAt.getTime();
     const diffMinutes = Math.floor(diffMs / (1000 * 60));
@@ -32,7 +47,17 @@ const timeDisplay = computed(() => {
         return `${diffHours} hour${diffHours !== 1 ? "s" : ""} ago`;
     }
 
-    return `${diffDays} day${diffDays !== 1 ? "s" : ""} ago`;
+    if (diffDays < 30) {
+        return `${diffDays} day${diffDays !== 1 ? "s" : ""} ago`;
+    }
+
+    if (diffDays < 365) {
+        const months = Math.floor(diffDays / 30);
+        return `${months} month${months !== 1 ? "s" : ""} ago`;
+    }
+
+    const years = Math.floor(diffDays / 365);
+    return `${years} year${years !== 1 ? "s" : ""} ago`;
 });
 
 function formatFileSize(bytes: number): string {
@@ -47,32 +72,135 @@ function formatFileSize(bytes: number): string {
     return `${size.toFixed(size < 10 ? 1 : 0)} ${units[i]}`;
 }
 
-const vote = ref<'up' | 'down' | null>(null);
-const voteCount = ref(0)
+const vote = ref<'UPVOTE' | 'DOWNVOTE' | null>(null);
+const voteCount = ref(0);
+const userId = ref<number | null>(null);
 
-function updoot() {
-    if (vote.value === 'up') {
-        vote.value = null;
-        voteCount.value -= 1;
-    } else {
-        if (vote.value === 'down') {
-            voteCount.value += 1;
+// Fetch user's current vote and initialize vote count
+async function fetchUserVote() {
+    if (!userId.value) return;
+
+    try {
+        const userVote = await VoteService.getMyVote(props.post.post_id);
+        if (userVote) {
+            vote.value = userVote.vote_type;
         }
-        vote.value = 'up';
-        voteCount.value += 1; // negates the -1 and ADDS another 1
+    } catch (err: any) {
+        // User hasn't voted yet, that's fine
+        if (err.response?.status !== 404) {
+            console.error('Error fetching user vote:', err);
+        }
     }
 }
 
-function downdoot() {
-    if (vote.value === 'down') {
-        vote.value = null;
-        voteCount.value += 1;
-    } else {
-        if (vote.value === 'up') {
-            voteCount.value -= 1;
+onMounted(async () => {
+    // Initialize vote count from post data
+    voteCount.value = props.post.upvote_count - props.post.downvote_count;
+
+    // Get user ID from email if logged in
+    if (auth.userEmail) {
+        userId.value = await getUserIdByEmail(auth.userEmail);
+        if (userId.value) {
+            await fetchUserVote();
         }
-        vote.value = 'down';
-        voteCount.value -= 1;
+    }
+});
+
+async function updoot() {
+    if (!auth.userEmail) {
+        console.error('User not logged in');
+        return;
+    }
+
+    if (!userId.value) {
+        userId.value = await getUserIdByEmail(auth.userEmail);
+        if (!userId.value) {
+            console.error('Could not find user ID');
+            return;
+        }
+    }
+
+    // Store previous state for rollback
+    const previousVote = vote.value;
+    const previousCount = voteCount.value;
+
+    try {
+        // Optimistic update - update UI immediately
+        if (vote.value === 'UPVOTE') {
+            vote.value = null;
+            voteCount.value -= 1;
+        } else {
+            if (vote.value === 'DOWNVOTE') {
+                voteCount.value += 2;
+            } else {
+                voteCount.value += 1;
+            }
+            vote.value = 'UPVOTE';
+        }
+
+        // Then make the API call
+        if (previousVote === 'UPVOTE') {
+            await VoteService.removeVote(props.post.post_id);
+        } else {
+            await VoteService.vote({
+                post_id: props.post.post_id,
+                vote_type: 'UPVOTE'
+            });
+        }
+    } catch (err: any) {
+        console.error('Error voting:', err);
+        // Rollback on error
+        vote.value = previousVote;
+        voteCount.value = previousCount;
+    }
+}
+
+async function downdoot() {
+    if (!auth.userEmail) {
+        console.error('User not logged in');
+        return;
+    }
+
+    if (!userId.value) {
+        userId.value = await getUserIdByEmail(auth.userEmail);
+        if (!userId.value) {
+            console.error('Could not find user ID');
+            return;
+        }
+    }
+
+    // Store previous state for rollback
+    const previousVote = vote.value;
+    const previousCount = voteCount.value;
+
+    try {
+        // Optimistic update - update UI immediately
+        if (vote.value === 'DOWNVOTE') {
+            vote.value = null;
+            voteCount.value += 1;
+        } else {
+            if (vote.value === 'UPVOTE') {
+                voteCount.value -= 2;
+            } else {
+                voteCount.value -= 1;
+            }
+            vote.value = 'DOWNVOTE';
+        }
+
+        // Then make the API call
+        if (previousVote === 'DOWNVOTE') {
+            await VoteService.removeVote(props.post.post_id);
+        } else {
+            await VoteService.vote({
+                post_id: props.post.post_id,
+                vote_type: 'DOWNVOTE'
+            });
+        }
+    } catch (err: any) {
+        console.error('Error voting:', err);
+        // Rollback on error
+        vote.value = previousVote;
+        voteCount.value = previousCount;
     }
 }
 
@@ -86,7 +214,7 @@ function downdoot() {
                     <img :src="avatar" alt="avatar" class="h-16 w-16 rounded-2xl">
                     <div>
                         <p class="font-semibold text-[1.25rem]">{{ post.title }}</p>
-                        <p class="font-medium opacity-80">{{ post.firstName }} {{ post.lastName }}
+                        <p class="font-medium opacity-80">{{ post.first_name }} {{ post.last_name }}
                             <span class="opacity-60 text-[0.725rem]">• {{ timeDisplay }}
                             </span>
                         </p>
@@ -102,8 +230,8 @@ function downdoot() {
                     <FileText :size="16" class="text-foreground0/80" />
                 </div>
                 <div class="flex flex-col font-medium">
-                    <p class="text-sm">{{ file.fileName }}.pdf</p>
-                    <p class="text-[0.5rem] opacity-60">{{ formatFileSize(file.fileSize) }}</p>
+                    <p class="text-sm">{{ file.file_name }}.pdf</p>
+                    <p class="text-[0.5rem] opacity-60">{{ formatFileSize(file.file_size) }}</p>
                 </div>
             </div>
         </div>
@@ -112,20 +240,23 @@ function downdoot() {
                 <div class="flex gap items-center gap-3">
                     <div class="w-fit flex gap-4 items-center">
                         <button @click="updoot">
-                            <ArrowUp class="h-fit w-fit p-3 bg-background2/60 rounded-xl shadow-lg"
-                                :class="vote === 'up' ? 'text-green-300' : 'text-foreground0'" />
+                            <ArrowUp
+                                class="h-fit w-fit p-3 bg-background2/60 rounded-xl shadow-lg transition-colors hover:text-green-300"
+                                :class="vote === 'UPVOTE' ? 'text-green-300' : 'text-foreground0'" />
                         </button>
-                        <p :class="vote === 'up' ? 'text-green-300' : (vote === 'down' ? 'text-red-300' : 'text-foreground0')">
+                        <p class="font-semibold min-w-8 text-center"
+                            :class="vote === 'UPVOTE' ? 'text-green-300' : (vote === 'DOWNVOTE' ? 'text-red-300' : 'text-foreground0')">
                             {{ voteCount }}
                         </p>
                         <button @click="downdoot">
-                            <ArrowDown class="h-fit w-fit p-3 bg-background2/60 rounded-xl shadow-lg"
-                                :class="vote === 'down' ? 'text-red-300' : 'text-foreground0'" />
+                            <ArrowDown
+                                class="h-fit w-fit p-3 bg-background2/60 rounded-xl shadow-lg transition-colors hover:text-red-300"
+                                :class="vote === 'DOWNVOTE' ? 'text-red-300' : 'text-foreground0'" />
                         </button>
                     </div>
                     <ExternalLink class="h-fit w-fit p-3 bg-background2/60 rounded-xl shadow-lg" />
                 </div>
-                <p class="px-4 py-1 bg-dsa rounded-2xl text-background1">{{ post.postTags }}</p>
+                <p class="px-4 py-1 bg-dsa rounded-2xl text-background1">{{ post.post_tag }}</p>
             </div>
         </div>
     </div>

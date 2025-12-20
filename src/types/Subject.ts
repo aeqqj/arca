@@ -1,10 +1,16 @@
-export interface Subject {
-    id: number;
-    code: string;
-    name: string;
+import type { DepartmentResponse } from "@/types/Department";
+
+export interface SubjectResponse {
+  id: number;
+  code: string;
+  name: string;
+  aliases?: string[];
+  departments: DepartmentResponse[];
 }
 
-export interface DepartmentSubject {
-    department_id: number;
-    subject_id: number;
+export interface SubjectRequest {
+    code: string;
+    name: string;
+    aliases?: string[];
+    department_ids: number[];
 }

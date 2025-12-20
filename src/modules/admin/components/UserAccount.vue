@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import { Mail, FileText, Gavel } from 'lucide-vue-next';
 import { computed } from 'vue';
-import type { PostType } from '@/types/Post';
-import type { UserType } from '@/types/User';
+import type { PostResponse } from '@/types/Post';
+import type { User } from '@/types/User';
 
 const props = defineProps<{
-    user: UserType | null;
-    posts: PostType[];
+    user: User; 
+    posts: PostResponse[];
 }>();
 
 const totalPosts = computed(() => {
     if (!props.user) return 0;
-    return props.posts.filter(p => p.userId === props.user!.id).length;
+    return props.posts.filter(p => p.user_id === props.user!.id).length;
 });
 
 </script>

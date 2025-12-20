@@ -5,9 +5,9 @@ import { ChevronDown } from 'lucide-vue-next';
 import { usePostApi } from '@/composables/UsePostApi';
 import { useAuthStore } from '@/modules/authentication/store/authStore';
 import { ref, onMounted, computed } from 'vue';
-import type { PostType } from '@/types/Post';
+import type { PostResponse } from '@/types/Post';
 
-const posts = ref<PostType[]>([]);
+const posts = ref<PostResponse[]>([]);
 const sortBy = ref<'best' | 'recent'>('best');
 const selectedSubject = ref<string | null>(null);
 const showSortMenu = ref(false);
@@ -15,40 +15,40 @@ const loading = ref(true);
 const error = ref('');
 
 const auth = useAuthStore();
-
 const postApi = usePostApi();
 
-const onSubjectSelected = (subjectName: string) => {
+const onSubjectSelected = (subjectId: number, subjectName: string) => {
     if (selectedSubject.value === subjectName) {
-        selectedSubject.value = null
+        selectedSubject.value = null;
     } else {
-        selectedSubject.value = subjectName
+        selectedSubject.value = subjectName;
     }
+}
+
+const handleClearFilter = () => {
+    selectedSubject.value = null; // Clear the filter to show all posts
 }
 
 const filteredPosts = computed(() => {
     if (!selectedSubject.value) {
         return posts.value;
     }
-
     return posts.value.filter(
-        post => post.postTags.includes(selectedSubject.value!)
+        post => post.post_tag?.includes(selectedSubject.value!)
     );
 });
 
 const sortedPosts = computed(() => {
     const copy = [...filteredPosts.value];
-
     if (sortBy.value === 'recent') {
         return copy.sort(
             (a, b) =>
-                new Date(b.createdAt).getTime() -
-                new Date(a.createdAt).getTime()
+                new Date(b.created_at).getTime() -
+                new Date(a.created_at).getTime()
         );
     }
-
     // best
-    return copy.sort((a, b) => b.upvoteCount - a.upvoteCount);
+    return copy.sort((a, b) => b.upvote_count - a.upvote_count);
 });
 
 const setSort = (value: 'best' | 'recent') => {
@@ -69,18 +69,16 @@ onMounted(async () => {
         loading.value = false;
     }
 })
-
 </script>
 
 <template>
-    <MainLayout @selectSubject="onSubjectSelected">
+    <MainLayout @selectSubject="onSubjectSelected" @clearFilter="handleClearFilter">
         <div class="flex flex-col gap-6">
             <div class="relative w-fit">
                 <p class="flex items-center gap-1 cursor-pointer select-none" @click="showSortMenu = !showSortMenu">
                     {{ sortBy === 'best' ? 'Best' : 'Recent' }}
                     <ChevronDown :size="20" class="transition-transform" :class="{ 'rotate-180': showSortMenu }" />
                 </p>
-
                 <div v-if="showSortMenu" class="absolute z-10 mt-2 w-28 rounded-lg bg-background1 shadow-lg">
                     <button class="w-full px-4 py-2 text-left hover:bg-muted" @click="setSort('best')">
                         Best

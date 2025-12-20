@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { FileText, CircleCheck, CircleX } from "lucide-vue-next";
-import type { PostType } from "@/types/Post";
+import type { PostResponse } from "@/types/Post";
 import { computed } from "vue";
 
 const props = defineProps<{
-    post: PostType;
+    post: PostResponse;
 }>()
 
 const emit = defineEmits<{
@@ -14,15 +14,15 @@ const emit = defineEmits<{
 }>()
 
 function approvePost() {
-    emit('approvePost', props.post.postId);
+    emit('approvePost', props.post.post_id);
 }
 
 function denyPost() {
-    emit('denyPost', props.post.postId);
+    emit('denyPost', props.post.post_id);
 }
 
 function selectUser() {
-    emit('selectUser', props.post.userId);
+    emit('selectUser', props.post.user_id);
 }
 
 const avatar = "/newaccount.png";
@@ -30,7 +30,7 @@ const avatar = "/newaccount.png";
 const timeDisplay = computed(() => {
     if (!props.post) return "just now";
 
-    const createdAt = new Date(props.post.createdAt);
+    const createdAt = new Date(props.post.created_at);
     const now = new Date();
 
     const diffMs = now.getTime() - createdAt.getTime();
@@ -75,7 +75,7 @@ function formatFileSize(bytes: number): string {
                     <img :src="avatar" alt="avatar" class="h-16 w-16 rounded-2xl">
                     <div>
                         <p class="text-[1.25em]">{{ post.title }}</p>
-                        <p class="opacity-80">{{ post.firstName }} {{ post.lastName }}
+                        <p class="opacity-80">{{ post.first_name }} {{ post.last_name }}
                             <span class="opacity-60 text-[0.725rem]">• {{ timeDisplay }}
                             </span>
                         </p>
@@ -92,8 +92,8 @@ function formatFileSize(bytes: number): string {
                     <FileText :size="16" class="text-foreground0/80"/>
                 </div>
                 <div class="flex flex-col font-medium">
-                    <p class="text-sm ">{{ file.fileName }}.pdf</p>
-                    <p class="text-[0.5rem] opacity-60 ">{{ formatFileSize(file.fileSize) }}</p>
+                    <p class="text-sm ">{{ file.file_name }}.pdf</p>
+                    <p class="text-[0.5rem] opacity-60 ">{{ formatFileSize(file.file_size) }}</p>
                 </div>
             </div>
         </div>
@@ -113,7 +113,7 @@ function formatFileSize(bytes: number): string {
                         </button>
                     </div>
                 </div>
-                <p class="px-4 py-1 bg-dsa rounded-2xl text-background1">{{ post.postTags }}</p>
+                <p class="px-4 py-1 bg-dsa rounded-2xl text-background1">{{ post.post_tag }}</p>
             </div>
         </div>
     </div>

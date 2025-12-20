@@ -1,8 +1,11 @@
-import type { Department } from './Department';
+import type { DepartmentResponse } from "@/types/Department";
 
-export interface School {
-  id: number;
-  name: string;
-  departments: Department[];
+export interface SchoolResponse {
+    id: number;
+    name: string;
+    departments: DepartmentResponse[];
 }
 
+export interface SchoolRequest {
+    name: string;
+}
