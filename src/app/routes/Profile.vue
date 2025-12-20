@@ -25,6 +25,11 @@ const isOwnProfile = computed(() => {
     return currentUserId.value !== null && user.value?.id === currentUserId.value;
 });
 
+const getProfilePictureUrl = (profilePicture: string | null) => {
+    if (!profilePicture) return '/newaccount.png';
+    return profilePicture;
+};
+
 onMounted(async () => {
     try {
         loading.value = true;
@@ -117,7 +122,7 @@ const triggerFileInput = () => {
                 <div class="flex gap-8 items-end">
                     <!-- Profile Picture with Upload Option -->
                     <div class="relative">
-                        <img :src="user.profile_picture || '/newaccount.png'" alt="picture"
+                        <img :src="getProfilePictureUrl(user.profile_picture)" alt="picture"
                             class="h-64 w-64 rounded-2xl object-cover"
                             :class="{ 'cursor-pointer': isOwnProfile && !uploading }"
                             @click="isOwnProfile && !uploading ? triggerFileInput() : null">

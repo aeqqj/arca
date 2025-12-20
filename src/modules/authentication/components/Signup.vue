@@ -8,22 +8,18 @@ import { useAuthStore } from '../store/authStore';
 const router = useRouter();
 const auth = useAuthStore();
 
-// Form fields
 const firstName = ref('');
 const lastName = ref('');
 const email = ref('');
 const password = ref('');
 const confirmPassword = ref('');
 
-// State
 const loading = ref(false);
 const error = ref<string | null>(null);
 
 const validateForm = () => {
-    // Reset error
     error.value = null;
 
-    // Validation
     if (!firstName.value.trim()) {
         error.value = 'First name is required';
         return false;
@@ -39,7 +35,6 @@ const validateForm = () => {
         return false;
     }
 
-    // Email format validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email.value)) {
         error.value = 'Please enter a valid email';
@@ -86,21 +81,19 @@ const handleSignup = async () => {
 
         console.log('Registration successful:', response.data);
 
-        // Auto-login after registration
         const loginResponse = await AuthService.login(email.value, password.value);
 
-        // Store tokens
         localStorage.setItem('accessToken', loginResponse.data.accessToken);
         localStorage.setItem('refreshToken', loginResponse.data.refreshToken);
 
-        // Update auth store
-        auth.login(email.value);
+        auth.login(email.value, password.value);
 
-        // Redirect to home
         router.push({ name: 'Home' });
 
     } catch (err: any) {
         console.error('Signup error:', err);
+        console.error('Error response:', err.response?.data);
+        console.error('Error status:', err.response?.status);
         error.value = err.response?.data?.message || 'Registration failed. Please try again.';
     } finally {
         loading.value = false;
@@ -132,7 +125,6 @@ const handleSignup = async () => {
                     <input v-model="firstName" type="text" placeholder="First name"
                         class="w-full px-5 py-3 bg-background1 rounded-xl shadow-xl" :disabled="loading" />
                 </div>
-
                 <div class="flex flex-col justify-start text-left gap-1 flex-1">
                     <label>Last Name</label>
                     <input v-model="lastName" type="text" placeholder="Last name"
@@ -147,7 +139,6 @@ const handleSignup = async () => {
                     <input v-model="password" type="password" placeholder="Password"
                         class="w-full px-5 py-3 bg-background1 rounded-xl shadow-xl" :disabled="loading" />
                 </div>
-
                 <div class="flex flex-col justify-start text-left gap-1 flex-1">
                     <label>Confirm Password</label>
                     <input v-model="confirmPassword" type="password" placeholder="Confirm password"

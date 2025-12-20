@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { FileText, CircleCheck, CircleX } from "lucide-vue-next";
 import type { PostResponse } from "@/types/Post";
-import { computed } from "vue";
+import { UserService } from "@/services/UserService";
+import { computed, ref, onMounted } from "vue";
 
 const props = defineProps<{
     post: PostResponse;
@@ -12,6 +13,13 @@ const emit = defineEmits<{
     (e: 'approvePost', postId: number): void
     (e: 'denyPost', postId: number): void
 }>()
+
+const postAuthorProfilePicture = ref<string | null>(null);
+
+const avatar = computed(() => {
+    if (!postAuthorProfilePicture.value) return '/newaccount.png';
+    return postAuthorProfilePicture.value;
+});
 
 function approvePost() {
     emit('approvePost', props.post.post_id);
@@ -24,8 +32,6 @@ function denyPost() {
 function selectUser() {
     emit('selectUser', props.post.user_id);
 }
-
-const avatar = "/newaccount.png";
 
 const timeDisplay = computed(() => {
     if (!props.post) return "just now";
@@ -65,6 +71,23 @@ function formatFileSize(bytes: number): string {
     return `${size.toFixed(size < 10 ? 1 : 0)} ${units[i]}`;
 }
 
+// Fetch post author's profile picture
+async function fetchPostAuthorProfile() {
+    try {
+        if (props.post.user_id) {
+            const userDetails = await UserService.getUserDetails(props.post.user_id);
+            postAuthorProfilePicture.value = userDetails.profile_picture || null;
+        }
+    } catch (err: any) {
+        console.error('Error fetching post author profile:', err);
+        postAuthorProfilePicture.value = null;
+    }
+}
+
+onMounted(async () => {
+    await fetchPostAuthorProfile();
+});
+
 </script>
 
 <template>
@@ -89,7 +112,7 @@ function formatFileSize(bytes: number): string {
             <div v-for="file in post.files" :key="file.id"
                 class="flex items-center h-fit w-fit px-3 py-2 bg-background2 gap-2 rounded-xl shadow-lg">
                 <div class="bg-background0/40 h-fit w-fit p-3 rounded-xl">
-                    <FileText :size="16" class="text-foreground0/80"/>
+                    <FileText :size="16" class="text-foreground0/80" />
                 </div>
                 <div class="flex flex-col font-medium">
                     <p class="text-sm ">{{ file.file_name }}.pdf</p>
