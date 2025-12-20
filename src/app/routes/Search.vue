@@ -121,7 +121,7 @@ watch(searchQuery, () => {
                 </div>
 
                 <!-- Search query display -->
-                <p v-if="searchQuery" class="text-sm opacity-60">
+                <p v-if="searchQuery" class="text-start text-sm opacity-60">
                     Searching for: "{{ route.query.q }}"
                 </p>
 

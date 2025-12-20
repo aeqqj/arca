@@ -6,7 +6,7 @@ import type { PostResponse } from '@/types/Post';
 import type { User } from '@/types/User';
 
 const props = defineProps<{
-    user: User;
+    user: User | null;
     posts: PostResponse[];
 }>();
 
@@ -14,17 +14,15 @@ const router = useRouter();
 
 const totalPosts = computed(() => {
     if (!props.user) return 0;
-    return props.posts.filter(p => p.user_id === props.user!.id).length;
+    return props.posts.filter(p => p.user_id === props.user!.id && p.status === 'APPROVED').length;
 });
 
 function viewProfile() {
     if (!props.user?.id) return;
-
     const route = router.resolve({
         name: 'Profile',
         params: { userId: props.user.id }
     });
-
     window.open(route.href, '_blank');
 }
 </script>

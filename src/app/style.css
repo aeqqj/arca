@@ -13,7 +13,7 @@
     --color-foreground0: oklch(0.9612 0 0);
     --color-background4: oklch(0.15 0 0);
 
-    --color-dsa: var(--color-red-100);
+    --color-fallback: oklch(0.3562 0 0);
 }
 
 ::-webkit-scrollbar {

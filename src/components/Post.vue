@@ -7,6 +7,7 @@ import { FileService } from "@/services/FileService";
 import { UserService } from "@/services/UserService";
 import { useAuthStore } from '@/modules/authentication/store/authStore';
 import { useUserSearch } from '@/composables/getUserSearch';
+import CourseColors from '@/assets/CourseColors.json';
 
 const props = defineProps<{
     post: PostResponse;
@@ -20,6 +21,11 @@ const postAuthorProfilePicture = ref<string | null>(null);
 const getProfilePictureUrl = computed(() => {
     if (!postAuthorProfilePicture.value) return '/newaccount.png';
     return postAuthorProfilePicture.value;
+});
+
+const getCourseColor = computed(() => {
+    const tag = props.post.post_tag;
+    return (CourseColors as Record<string, string>)[tag] || 'bg-fallback';
 });
 
 const timeDisplay = computed(() => {
@@ -280,7 +286,7 @@ async function downdoot() {
                         </button>
                     </div>
                 </div>
-                <p class="px-4 py-1 bg-dsa rounded-2xl text-background1">{{ post.post_tag }}</p>
+                <p class="px-4 py-1 rounded-2xl text-background1" :class="getCourseColor">{{ post.post_tag }}</p>
             </div>
         </div>
     </div>

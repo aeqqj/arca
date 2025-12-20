@@ -1,27 +1,27 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import SearchBar from "./MainSearchBar.vue";
 import { CirclePlus, Shield, Vault, User as UserIcon } from "lucide-vue-next";
 import { useAuthStore } from '@/modules/authentication/store/authStore';
 import { useUserSearch } from '@/composables/getUserSearch';
-import type { PostResponse } from "@/types/Post";
-import type { User } from "@/types/User";
+import { UserService } from '@/services/UserService';
 
 const auth = useAuthStore();
 const { getUserIdByEmail } = useUserSearch();
+
 const school: string = "SAS";
 const showUserModal = ref(false);
 const router = useRouter();
 const searchQuery = ref("");
-const posts = ref<PostResponse[]>([]);
-const users = ref<User[]>([]);
+const userRoles = ref<string[]>([]);
+const userId = ref<number | null>(null);
 
-// Navigation functions
+const isAdmin = computed(() => userRoles.value.includes('ROLE_ADMIN'));
+
 const goToHome = () => router.push({ name: "Home" });
 const goToAdmin = () => router.push({ name: "Admin" });
 const goToCreate = () => router.push({ name: "Create" });
-const goToVault = () => router.push({ name: "Vault" });
 
 const goToProfile = async () => {
     console.log('goToProfile called');
@@ -29,12 +29,12 @@ const goToProfile = async () => {
     
     if (auth.userEmail) {
         console.log('Fetching userId...');
-        const userId = await getUserIdByEmail(auth.userEmail);
-        console.log('userId:', userId);
+        const fetchedUserId = await getUserIdByEmail(auth.userEmail);
+        console.log('userId:', fetchedUserId);
         
-        if (userId) {
-            console.log('Pushing to route with userId:', userId);
-            router.push({ name: 'Profile', params: { userId: userId } });
+        if (fetchedUserId) {
+            console.log('Pushing to route with userId:', fetchedUserId);
+            router.push({ name: 'Profile', params: { userId: fetchedUserId } });
         } else {
             console.log('userId is null or undefined');
         }
@@ -53,6 +53,25 @@ const logout = () => {
     auth.logout();
     router.push({ name: 'Authentication' });
 };
+
+const fetchUserRoles = async () => {
+    if (auth.userEmail) {
+        try {
+            const fetchedUserId = await getUserIdByEmail(auth.userEmail);
+            if (fetchedUserId) {
+                userId.value = fetchedUserId;
+                const userDetails = await UserService.getUserDetails(fetchedUserId);
+                userRoles.value = userDetails.roles;
+            }
+        } catch (err) {
+            console.error('Error fetching user roles:', err);
+        }
+    }
+};
+
+onMounted(() => {
+    fetchUserRoles();
+});
 </script>
 
 <template>
@@ -61,16 +80,13 @@ const logout = () => {
         <button @click="goToHome" class="font-outfit font-semibold text-3xl">arca • {{ school }}</button>
         <SearchBar @search="searchQuery = $event" />
         <div class="flex justify-between items-center gap-6 text-foreground0/60">
-            <button class="flex h-fit w-fit px-3 py-1 gap-2 border rounded-xl" @click="goToAdmin">
+            <button v-if="isAdmin" class="flex h-fit w-fit px-3 py-1 gap-2 border rounded-xl" @click="goToAdmin">
                 <Shield :size="20" />
                 <p>Admin</p>
             </button>
             <button class="flex h-fit w-fit px-3 py-1 gap-2 border rounded-xl" @click="goToCreate">
                 <CirclePlus :size="20" />
                 <p>Create</p>
-            </button>
-            <button @click="goToVault">
-                <Vault :size="28" />
             </button>
             <div class="relative">
                 <button @click="toggleUserModal">

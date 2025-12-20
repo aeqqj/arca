@@ -18,7 +18,6 @@ const userPosts = computed(() => {
     if (!selectedUser.value) return [];
     return posts.value.filter(p => p.user_id === selectedUser.value?.id);
 });
-
 async function handleApprovePost(postId: number) {
     try {
         loading.value = true;
@@ -29,14 +28,7 @@ async function handleApprovePost(postId: number) {
             approved: true
         });
 
-        // Remove from pending posts or update status
         posts.value = posts.value.filter(p => p.post_id !== postId);
-
-        // Or if you want to keep it and update status:
-        // const post = posts.value.find(p => p.post_id === postId);
-        // if (post) {
-        //     post.status = 'APPROVED';
-        // }
 
         selectedUser.value = null;
     } catch (err: any) {
@@ -52,21 +44,12 @@ async function handleDenyPost(postId: number, reason?: string) {
         loading.value = true;
         error.value = null;
 
-        // Call the approve endpoint with approved: false and optional reason
         await PostService.approvePost(postId, {
             approved: false,
             rejection_reason: reason || 'Post does not meet guidelines'
         });
 
-        // Remove from pending posts or update status
         posts.value = posts.value.filter(p => p.post_id !== postId);
-
-        // Or if you want to keep it and update status:
-        // const post = posts.value.find(p => p.post_id === postId);
-        // if (post) {
-        //     post.status = 'REJECTED';
-        //     if (reason) post.rejection_reason = reason;
-        // }
 
         selectedUser.value = null;
     } catch (err: any) {

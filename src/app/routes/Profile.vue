@@ -20,7 +20,6 @@ const loading = ref(true);
 const error = ref<string | null>(null);
 const currentUserId = ref<number | null>(null);
 const uploading = ref(false);
-
 const isOwnProfile = computed(() => {
     return currentUserId.value !== null && user.value?.id === currentUserId.value;
 });
@@ -120,16 +119,14 @@ const triggerFileInput = () => {
         <div v-else-if="user" class="flex gap-20">
             <div class="flex flex-col gap-14">
                 <div class="flex gap-8 items-end">
-                    <!-- Profile Picture with Upload Option -->
                     <div class="relative">
                         <img :src="getProfilePictureUrl(user.profile_picture)" alt="picture"
                             class="h-64 w-64 rounded-2xl object-cover"
                             :class="{ 'cursor-pointer': isOwnProfile && !uploading }"
                             @click="isOwnProfile && !uploading ? triggerFileInput() : null">
 
-                        <!-- Hover Overlay for Own Profile -->
                         <div v-if="isOwnProfile"
-                            class="absolute inset-0 bg-black bg-opacity-30 rounded-2xl opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer"
+                            class="absolute inset-0 bg-black rounded-2xl opacity-0 hover:opacity-60 transition-opacity flex items-center justify-center cursor-pointer"
                             :class="{ 'pointer-events-none opacity-50': uploading }"
                             @click="!uploading ? triggerFileInput() : null">
                             <p class="text-white font-semibold text-center px-4">
@@ -137,17 +134,13 @@ const triggerFileInput = () => {
                             </p>
                         </div>
 
-                        <!-- Hidden File Input -->
                         <input v-if="isOwnProfile" id="profile-picture-input" type="file" accept="image/*"
                             class="hidden" @change="handleFileSelect" :disabled="uploading">
                     </div>
 
-                    <div class="max-w-lg text-start pb-4 border-t border-foreground0/60 font-semibold">
+                    <div class="w-lg text-start pb-4 border-t border-foreground0/60 font-semibold">
                         <h4>{{ user.first_name }} {{ user.last_name }}</h4>
                         <div>
-                            <p class="font-semibold text-foreground0/60">
-                                {{ user.course }} • {{ user.department }}
-                            </p>
                             <p v-if="user.bio" class="text-sm font-normal text-foreground0/80 mt-2">
                                 {{ user.bio }}
                             </p>
@@ -156,16 +149,6 @@ const triggerFileInput = () => {
                 </div>
 
                 <div class="flex flex-col gap-6">
-                    <div class="flex gap-6">
-                        <button
-                            class="px-4 py-1 text-background0 border border-foreground0/60 bg-foreground0 rounded-2xl">
-                            Posts ({{ posts.length }})
-                        </button>
-                        <button class="px-4 py-1 border border-foreground0/60 rounded-2xl">
-                            About me
-                        </button>
-                    </div>
-
                     <div class="flex flex-col gap-8">
                         <div v-if="posts.length === 0" class="text-center py-8 text-foreground0/60">
                             No posts yet

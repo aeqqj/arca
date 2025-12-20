@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/modules/authentication/store/authStore'
 
-import Landing from '../routes/Landing.vue'
 import Home from '../routes/Home.vue'
 import Profile from '../routes/Profile.vue'
 import Search from '../routes/Search.vue'
@@ -11,9 +10,7 @@ import Create from '../routes/Create.vue'
 import Authentication from '../routes/Authentication.vue'
 
 const routes = [
-    { path: '/', name: 'Landing', component: Landing, meta: { public: true } },
     { path: '/auth', name: 'Authentication', component: Authentication, meta: { public: true } },
-
     { path: '/home', name: 'Home', component: Home },
     { path: '/profile/:userId', name: 'Profile', component: Profile, props: true },
     { path: '/search', name: 'Search', component: Search },

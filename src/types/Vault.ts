@@ -9,10 +9,10 @@ export interface VaultRequest {
 }
 
 export interface Vault {
-  id: number;
-  post_id: number;
-  user_id: number;
-  label: string;
-  created_at?: string; // ISO date string
-  updated_at?: string; // ISO date string
+    id: number;
+    post_id: number;
+    user_id: number;
+    label: string;
+    created_at?: string; // ISO date string
+    updated_at?: string; // ISO date string
 }

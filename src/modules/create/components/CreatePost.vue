@@ -130,7 +130,7 @@ async function createPost() {
 <template>
     <div class="w-200 flex flex-col gap-8">
         <div class="flex justify-between h-fit">
-            <p class="text-2xl font-semibold">Create Post</p>
+            <p class="text-2xl font-semibold opacity-60">Create Post</p>
             <div class="flex items-center justify-center">
                 <span class="text-sm px-4 py-1 rounded-2xl text-background2" :class="selectedCourseColor">
                     {{ selectedCourse?.name ?? "No course selected" }}

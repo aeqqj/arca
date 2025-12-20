@@ -37,7 +37,6 @@ export const PostService = {
         return res.data;
     },
     
-    // === Approval ===
     getAllPendingApprovalPosts: async (): Promise<PostResponse[]> => {
         const res = await api.get<PostResponse[]>(`${API_URL}/pending`);
         return res.data;
